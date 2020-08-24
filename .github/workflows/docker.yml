@@ -1,0 +1,25 @@
+name: Build Docker images
+
+# This workflow is triggered on pushes to the repository:
+on: [push]
+
+jobs:
+  build_docker_images:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v1
+        with:
+          # We omit the "registry" parameter so it defaults to
+          # DockerHub
+          dockerfile: Dockerfile
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: macrotex/docker-patchman
+          tag_with_ref: false
+          tag_with_sha: false
+          tags: buster

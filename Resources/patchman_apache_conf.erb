@@ -1,0 +1,84 @@
+Define patchman_pythonpath /usr/lib/python2.7/dist-packages/patchman
+WSGIPythonPath ${patchman_pythonpath}/patchman
+
+<VirtualHost *:80>
+<%- if ENV["USE_SSL"] == "YES" -%>
+  ServerName  <%= ENV["HOSTNAME"] %>
+  ServerAlias <%= ENV["SNAME"] %>
+  Redirect "/" "https://<%= ENV["HOSTNAME"] %>/patchman"
+<%- else -%>
+  ServerName  <%= ENV["HOSTNAME"] %>
+  ServerAlias <%= ENV["SNAME"] %>
+
+  LogLevel debug
+
+  RedirectMatch "^/$" "/patchman"
+
+  WSGIScriptAlias /patchman ${patchman_pythonpath}/wsgi.py
+
+  <Directory ${patchman_pythonpath}>
+    <Files wsgi.py>
+      Require all granted
+    </Files>
+    AllowOverride All
+  </Directory>
+
+  Alias /patchman_media "/var/lib/patchman/media"
+  <Location /patchman_media>
+    SetHandler None
+  </Location>
+
+  <Directory /var/lib/patchman/media>
+    Require all granted
+  </Directory>
+
+  <Location /patchman/reports/upload>
+    AuthType     basic
+    AuthName     "patchman test"
+    AuthUserFile /etc/apache2/patchman.htpasswd
+    Require      valid-user
+  </Location>
+<%- end -%>
+</VirtualHost>
+
+<%- if ENV["USE_SSL"] == "YES" -%>
+<VirtualHost *:443>
+  ServerName  <%= ENV["HOSTNAME"] %>
+  ServerAlias <%= ENV["SNAME"] %>
+
+  LogLevel debug
+
+  RedirectMatch "^/$" "/patchman"
+
+  WSGIScriptAlias /patchman ${patchman_pythonpath}/wsgi.py
+
+  SSLEngine On
+  SSLCertificateFile    /etc/ssl/certs/server.pem
+  SSLCertificateKeyFile /etc/ssl/private/server.key
+  SSLCACertificateFile  /etc/ssl/certs/incommon2024-usertrust2038-bundle.pem
+
+  <Directory ${patchman_pythonpath}>
+    <Files wsgi.py>
+      Require all granted
+    </Files>
+    AllowOverride All
+  </Directory>
+
+  Alias /patchman_media "/var/lib/patchman/media"
+  <Location /patchman_media>
+    SetHandler None
+  </Location>
+
+  <Directory /var/lib/patchman/media>
+    Require all granted
+  </Directory>
+
+  <Location /patchman/reports/upload>
+    AuthType     basic
+    AuthName     "patchman test"
+    AuthUserFile /etc/apache2/patchman.htpasswd
+    Require      valid-user
+  </Location>
+
+</VirtualHost>
+<% end %>
