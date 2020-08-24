@@ -1,10 +1,12 @@
 #!/bin/bash
 
-export HOSTNAME
+if [ -z "$SERVERNAME" ]; then
+    SERVERNAME="$HOSTNAME"
+fi
+export SERVERNAME
 
-export SNAME=$(hostname -s)
-
-# Create Apache patchman configuration file depending on environment variable USE_SSL
+# Create Apache patchman configuration file depending on environment variable USE_SSL and
+# SERVERNAME.
 /usr/bin/erb -T- /root/patchman_apache_conf.erb > /etc/apache2/sites-available/patchman.conf
 
 # Enable SSL Module
@@ -22,9 +24,9 @@ fi
 while true; do
 
     if [ "$USE_SSL" == "YES" ]; then
-        patchman-client -s https://${HOSTNAME}/patchman
+        patchman-client -s https://${SERVERNAME}/patchman
     else
-        patchman-client -s http://${HOSTNAME}/patchman
+        patchman-client -s http://${SERVERNAME}/patchman
     fi
 
     sleep 86400

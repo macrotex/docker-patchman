@@ -58,13 +58,28 @@ GitHub](https://github.com/furlongm/patchman) page for more details.
 
    NOTE: patchman.db must be owned by www-data:root
 
-3. Script to setup the database and create admin user. This script exits with success 
+3. Script to setup the database and create admin user. This script exits with success
    code "0" if the database is already created or exists.
 ```
    docker exec -it patchman bash
 
    /root/setup-db.sh 		# Create admin user
 ```
+
+## Configuration
+
+### Servername
+
+Will use HOSTNAME unless SERVERNAME environment is defined. SERVERNAME
+should be fully-qualified.
+
+### SSL certificate and private key
+
+Must be mapped to
+
+    cetificate:  /etc/ssl/certs/server.pem
+    private key: /etc/ssl/private/server.key
+
 
 ## Turning on Debug mode
 

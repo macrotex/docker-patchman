@@ -3,12 +3,10 @@ WSGIPythonPath ${patchman_pythonpath}/patchman
 
 <VirtualHost *:80>
 <%- if ENV["USE_SSL"] == "YES" -%>
-  ServerName  <%= ENV["HOSTNAME"] %>
-  ServerAlias <%= ENV["SNAME"] %>
-  Redirect "/" "https://<%= ENV["HOSTNAME"] %>/patchman"
+  ServerName  <%= ENV["SERVERNAME"] %>
+  Redirect "/" "https://<%= ENV["SERVERNAME"] %>/patchman"
 <%- else -%>
-  ServerName  <%= ENV["HOSTNAME"] %>
-  ServerAlias <%= ENV["SNAME"] %>
+  ServerName  <%= ENV["SERVERNAME"] %>
 
   LogLevel debug
 
@@ -43,8 +41,7 @@ WSGIPythonPath ${patchman_pythonpath}/patchman
 
 <%- if ENV["USE_SSL"] == "YES" -%>
 <VirtualHost *:443>
-  ServerName  <%= ENV["HOSTNAME"] %>
-  ServerAlias <%= ENV["SNAME"] %>
+  ServerName  <%= ENV["SERVERNAME"] %>
 
   LogLevel debug
 
