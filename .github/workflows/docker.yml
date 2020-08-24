@@ -19,7 +19,7 @@ jobs:
           dockerfile: Dockerfile
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: macrotex/docker-patchman
+          repository: macrotex/patchman
           tag_with_ref: false
           tag_with_sha: false
           tags: buster
