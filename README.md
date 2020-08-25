@@ -1,11 +1,15 @@
 [[_TOC_]]
 
-# docker-patchman
+# Patchman docker container
 
-Patchman (Patch management tool) docker file. See the [Patchman
-GitHub](https://github.com/furlongm/patchman) page for more details.
+Dockerization of Patchman (Patch management tool). See the [Patchman
+GitHub](https://github.com/furlongm/patchman) page for more details on
+Patchman itself.
 
-## Quick Start
+The Docker container runs Patchman under Apache 2.4. Most of the
+configuration described below involves Apache.
+
+# Quick Start
 
 1. Build Image (Change to the directory where Dockerfile exists)
 
@@ -61,39 +65,51 @@ GitHub](https://github.com/furlongm/patchman) page for more details.
 3. Script to setup the database and create admin user. This script exits with success
    code "0" if the database is already created or exists.
 ```
-   docker exec -it patchman bash
+docker exec -it patchman bash
 
-   /root/setup-db.sh 		# Create admin user
+/root/setup-db.sh   # Create admin user
 ```
 
-## Configuration
+# Configuration
 
-### Servername
+## Apache configuration
 
-Will use HOSTNAME unless SERVERNAME environment is defined. SERVERNAME
-should be fully-qualified.
+## `SERVERNAME` environment variable
 
-### SSL certificate and private key
+Apache will use HOSTNAME as its `ServerName` unless the environment SERVERNAME. When
+defining SERVERNAME be sure it is fully-qualified.
 
-Must be mapped to
+## `USE_SSL` environment variable
+
+Apache assumes that SSL is enabled unless the environment variable
+`USE_SSL` is set to `NO`.
+
+## SSL certificate and private key
+
+If Apache is configured to use SSL (the default) Apache expects to find
+the private key and certificate in the usual Debian location. That is,
+they must be mapped as follows:
 
     cetificate:  /etc/ssl/certs/server.pem
     private key: /etc/ssl/private/server.key
 
+## Other configuration
 
-## Turning on Debug mode
+### Application debug mode
+
+To turn on Patchman debug mode
 
 Edit the file `/etc/patchman/local_settings.py` and change the line
 ```
-    Debug = False
+Debug = False
 ```
 to
 ```
-    Debug = True
+Debug = True
 ```
 Note that the debug messages will show up in the web browser itself.
 
-## The `patchman-client` user
+# The `patchman-client` user
 
 This Patchman server is configured so that the endpoint
 (`/patchman/reports/upload`) that receives Patchman client reports
