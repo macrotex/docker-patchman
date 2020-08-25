@@ -51,6 +51,9 @@ ADD Resources/start.sh /root/start.sh
 ## Setup script to initialise the database and create admin user.
 ADD Resources/setup-db.sh /root/setup-db.sh
 
+## ADD the script to process reports.
+ADD Resources/process-reports.sh /root/process-reports.sh
+
 ## ADD patchman-client conf file
 ADD Resources/patchman-client.conf /etc/patchman/patchman-client.conf
 
