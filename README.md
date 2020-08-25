@@ -76,17 +76,19 @@ docker exec -it patchman bash
 
 ## `SERVERNAME` environment variable
 
-Apache will use HOSTNAME as its `ServerName` unless the environment SERVERNAME. When
-defining SERVERNAME be sure it is fully-qualified.
+Apache will use HOSTNAME as its `ServerName` unless the environment
+SERVERNAME is defined. When defining SERVERNAME be sure it is
+fully-qualified.
 
 ## `USE_SSL` environment variable
 
 Apache assumes that SSL is enabled unless the environment variable
-`USE_SSL` is set to `NO`.
+`USE_SSL` is set to `NO`. This is useful when running this container
+behind a load-balancer that acts as the TLS front-end.
 
 ## SSL certificate and private key
 
-If Apache is configured to use SSL (the default) Apache expects to find
+If Apache is configured to use SSL (the default), Apache expects to find
 the private key and certificate in the usual Debian location. That is,
 they must be mapped as follows:
 
@@ -97,16 +99,16 @@ they must be mapped as follows:
 
 ### Process Reports Delay
 
-The container will periodically process all received reports and updates
+The container will periodically process all received reports and update
 its repository information. It does this by running the report process,
-sleeping a while, and then repeating. The amout of time it sleeps between
+sleeping a while, and then repeating. The amount of time it sleeps between
 reports processing is controlled by the environment variable
 `PROCESS_REPORT_SLEEP_SECONDS`. The default value for
-`PROCESS_REPORT_SLEEP_SECONDS` is 86400 (the numebr of seconds in one
+`PROCESS_REPORT_SLEEP_SECONDS` is 86400 (the number of seconds in one
 day).
 
-Note that on container start-up the reports process sleeps _first_
-for `PROCESS_REPORT_SLEEP_SECONDS` and then runs.
+Note that on container start-up the reports process _first_ sleeps
+for `PROCESS_REPORT_SLEEP_SECONDS` seconds and _then_ runs.
 
 ### Application debug mode
 
