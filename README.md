@@ -95,6 +95,19 @@ they must be mapped as follows:
 
 ## Other configuration
 
+### Process Reports Delay
+
+The container will periodically process all received reports and updates
+its repository information. It does this by running the report process,
+sleeping a while, and then repeating. The amout of time it sleeps between
+reports processing is controlled by the environment variable
+`PROCESS_REPORT_SLEEP_SECONDS`. The default value for
+`PROCESS_REPORT_SLEEP_SECONDS` is 86400 (the numebr of seconds in one
+day).
+
+Note that on container start-up the reports process sleeps _first_
+for `PROCESS_REPORT_SLEEP_SECONDS` and then runs.
+
 ### Application debug mode
 
 To turn on Patchman debug mode

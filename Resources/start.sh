@@ -5,6 +5,11 @@ if [ -z "$SERVERNAME" ]; then
 fi
 export SERVERNAME
 
+if [ -z "$PROCESS_REPORT_SLEEP_SECONDS" ]; then
+    PROCESS_REPORT_SLEEP_SECONDS=186400
+fi
+export PROCESS_REPORT_SLEEP_SECONDS
+
 # Create Apache patchman configuration file depending on environment variable USE_SSL and
 # SERVERNAME.
 /usr/bin/erb -T- /root/patchman_apache_conf.erb > /etc/apache2/sites-available/patchman.conf
@@ -20,15 +25,19 @@ fi
 
 /usr/sbin/apache2ctl -DFOREGROUND
 
-# Send client report every 24 hours
+# Process reports, sleep, then repeat.
 while true; do
 
+    # Send our own report.
     if [ "$USE_SSL" == "YES" ]; then
         patchman-client -s https://${SERVERNAME}/patchman
     else
         patchman-client -s http://${SERVERNAME}/patchman
     fi
 
-    sleep 86400
+    sleep "$PROCESS_REPORT_SLEEP_SECONDS"
+
+    # Process reports.
+    /root/process-reports.sh
 
 done
