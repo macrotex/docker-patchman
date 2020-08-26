@@ -74,19 +74,32 @@ docker exec -it patchman bash
 
 ## Apache configuration
 
-## `SERVERNAME` environment variable
+### `HTTP_PORT` environment variable
+
+The port that Apache listens on. If this environment variable is not set
+it defaults to 443.
+
+### `SERVERNAME` environment variable
 
 Apache will use HOSTNAME as its `ServerName` unless the environment
 SERVERNAME is defined. When defining SERVERNAME be sure it is
 fully-qualified.
 
-## `USE_SSL` environment variable
+### `USE_SSL` environment variable
 
-Apache assumes that SSL is enabled unless the environment variable
-`USE_SSL` is set to `NO`. This is useful when running this container
-behind a load-balancer that acts as the TLS front-end.
+This variable should be set to either `YES` or `NO`.
+Apache is configured to use SSL if `USE_SSL` is set to `YES` and
+configured to use plain HTTP if set `USE_SSL` is set to `NO`.
 
-## SSL certificate and private key
+Setting `USE_SSL` to `NO` is useful when running this container behind a
+load-balancer that acts as the TLS front-end.
+
+Note that setting `USE_SSL` to `YES` does not automatically set
+`HTTP_PORT` to 443; likewise, setting `USE_SSL` to `NO` does not
+automatically set `HTTP_PORT` to 80. Thus, be sure to set _both_
+`HTTP_PORT` and `USE_SSL`.
+
+### SSL certificate and private key
 
 If Apache is configured to use SSL (the default), Apache expects to find
 the private key and certificate in the usual Debian location. That is,

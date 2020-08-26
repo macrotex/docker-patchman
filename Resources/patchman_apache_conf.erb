@@ -1,59 +1,23 @@
 Define patchman_pythonpath /usr/lib/python2.7/dist-packages/patchman
 WSGIPythonPath ${patchman_pythonpath}/patchman
 
-<VirtualHost *:80>
-<%- if ENV["USE_SSL"] == "YES" -%>
-  ServerName  <%= ENV["SERVERNAME"] %>
-  Redirect "/" "https://<%= ENV["SERVERNAME"] %>/patchman"
-<%- else -%>
+<VirtualHost *:<%= ENV["HTTP_PORT"] %>>
   ServerName  <%= ENV["SERVERNAME"] %>
 
   LogLevel debug
 
   RedirectMatch "^/$" "/patchman"
 
-  WSGIScriptAlias /patchman ${patchman_pythonpath}/wsgi.py
-
-  <Directory ${patchman_pythonpath}>
-    <Files wsgi.py>
-      Require all granted
-    </Files>
-    AllowOverride All
-  </Directory>
-
-  Alias /patchman_media "/var/lib/patchman/media"
-  <Location /patchman_media>
-    SetHandler None
-  </Location>
-
-  <Directory /var/lib/patchman/media>
-    Require all granted
-  </Directory>
-
-  <Location /patchman/reports/upload>
-    AuthType     basic
-    AuthName     "patchman test"
-    AuthUserFile /etc/apache2/patchman.htpasswd
-    Require      valid-user
-  </Location>
-<%- end -%>
-</VirtualHost>
-
 <%- if ENV["USE_SSL"] == "YES" -%>
-<VirtualHost *:443>
-  ServerName  <%= ENV["SERVERNAME"] %>
-
-  LogLevel debug
-
-  RedirectMatch "^/$" "/patchman"
-
-  WSGIScriptAlias /patchman ${patchman_pythonpath}/wsgi.py
-
+  # SSL settings
   SSLEngine On
   SSLCertificateFile    /etc/ssl/certs/server.pem
   SSLCertificateKeyFile /etc/ssl/private/server.key
   SSLCACertificateFile  /etc/ssl/certs/incommon2024-usertrust2038-bundle.pem
 
+<%- end -%>
+  WSGIScriptAlias /patchman ${patchman_pythonpath}/wsgi.py
+
   <Directory ${patchman_pythonpath}>
     <Files wsgi.py>
       Require all granted
@@ -70,12 +34,11 @@ WSGIPythonPath ${patchman_pythonpath}/patchman
     Require all granted
   </Directory>
 
+  # Require Basic authentication for report uploads.
   <Location /patchman/reports/upload>
     AuthType     basic
     AuthName     "patchman test"
     AuthUserFile /etc/apache2/patchman.htpasswd
     Require      valid-user
   </Location>
-
 </VirtualHost>
-<% end %>
