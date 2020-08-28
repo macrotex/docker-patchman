@@ -110,18 +110,13 @@ they must be mapped as follows:
 
 ## Other configuration
 
-### Process Reports Delay
+### Process Reports
 
-The container will periodically process all received reports and update
-its repository information. It does this by running the report process,
-sleeping a while, and then repeating. The amount of time it sleeps between
-reports processing is controlled by the environment variable
-`PROCESS_REPORT_SLEEP_SECONDS`. The default value for
-`PROCESS_REPORT_SLEEP_SECONDS` is 86400 (the number of seconds in one
-day).
-
-Note that on container start-up the reports process _first_ sleeps
-for `PROCESS_REPORT_SLEEP_SECONDS` seconds and _then_ runs.
+To set the times you want the reports processed set the `RUN_TIMES` environment
+variable.  Set this variable to a space-delimited set of 24-hour HH:MM
+times. For example, to run the reports at 2:00 in the morning every day
+set `RUN_TIMES` to `"02:00"`. To run the reports at 2:00 in the morning and
+7:00 in the evening every day, set `RUN_TIMES` to `"02:00 19:00"`.
 
 ### Application debug mode
 

@@ -1,5 +1,49 @@
 #!/bin/bash
 
+### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##
+### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##
+# Get the number of seconds until next report run. Sets the variable
+# PROCESS_REPORT_SLEEP_SECONDS. Requires that the variable RUN_TIMES_ARRAY
+# be set to an array of times, for example, ("02:10" "10:15" "12:04")
+function time_to_sleep()
+{
+    local secs_to_sleep_min
+    local secs_to_sleep
+    local today_run_time_cmd
+    local tomorrow_run_time_cmd
+    local today_run_time
+    local tomorrow_run_time
+    local now
+
+    secs_to_sleep_min=86400
+    for run_time in ${RUN_TIMES[@]}; do
+
+        today_run_time_cmd="date -d 'today $run_time' +%s"
+        tomorrow_run_time_cmd="date -d 'tomorrow $run_time' +%s"
+
+        today_run_time=$(eval $today_run_time_cmd)
+        tomorrow_run_time=$(eval $tomorrow_run_time_cmd)
+        now=$(date +%s)
+
+        if (( today_run_time < now )); then
+            # Today's run time is already past, so use tomorrows run time.
+            secs_to_sleep="$(($tomorrow_run_time - $now))"
+        else
+            # Today's run time has not past, so use today's run time.
+            secs_to_sleep="$(($today_run_time - $now))"
+        fi
+
+        # Is this the minimum secs_to_sleep we have seen so far?
+        if (( secs_to_sleep < secs_to_sleep_min )); then
+            secs_to_sleep_min="$secs_to_sleep"
+        fi
+    done
+    PROCESS_REPORT_SLEEP_SECONDS="$secs_to_sleep_min"
+}
+### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##
+### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##
+
+
 ## Step 1. Set some defaults and do error checking.
 if [ -z "$SERVERNAME" ]; then
     SERVERNAME="$HOSTNAME"
@@ -32,6 +76,14 @@ if [[ ! "$USE_SSL" =~ $usessl_rx ]]; then
 fi
 export USE_SSL
 
+# Create RUN_TIMES_ARRAY from RUN_TIMES. If not defined, use a reasonable
+# default.
+if [ -z "$RUN_TIMES" ]; then
+    RUN_TIMES="02:00"
+fi
+RUN_TIMES_ARRAY=($RUN_TIMES)
+
+
 ## Step 2. Create Apache patchman configuration file depending on
 ## environment variables USE_SSL, SERVERNAME, and HTTP_PORT.
 /usr/bin/erb -T- /root/patchman_apache_conf.erb > /etc/apache2/sites-available/patchman.conf
@@ -52,12 +104,11 @@ fi
 while true; do
 
     # Send our own report.
-    if [ "$USE_SSL" == "YES" ]; then
-        patchman-client -s https://${SERVERNAME}/patchman
-    else
-        patchman-client -s http://${SERVERNAME}/patchman
-    fi
+    patchman-client -s "https://${SERVERNAME}/patchman"
 
+    # Call time_to_sleep function to set PROCESS_REPORT_SLEEP_SECONDS and
+    # then sleep.
+    time_to_sleep
     sleep "$PROCESS_REPORT_SLEEP_SECONDS"
 
     # Process reports.

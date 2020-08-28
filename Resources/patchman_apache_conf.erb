@@ -6,7 +6,9 @@ WSGIPythonPath ${patchman_pythonpath}/patchman
 
   LogLevel debug
 
-  RedirectMatch "^/$" "/patchman"
+  # If no path in URL redirect to /patchman:
+  RedirectMatch "^/$" "https://<%= ENV["SERVERNAME"] %>/patchman"
+  RedirectMatch "^$"  "https://<%= ENV["SERVERNAME"] %>/patchman"
 
 <%- if ENV["USE_SSL"] == "YES" -%>
   # SSL settings
