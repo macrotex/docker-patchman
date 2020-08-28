@@ -98,7 +98,7 @@ fi
 /usr/sbin/a2dissite 000-default
 /usr/sbin/a2ensite  patchman
 
-/usr/sbin/apache2ctl -DFOREGROUND
+/usr/sbin/apache2ctl -DFOREGROUND &
 
 # Process reports, sleep, then repeat.
 while true; do
