@@ -109,6 +109,7 @@ while true; do
     # Call time_to_sleep function to set PROCESS_REPORT_SLEEP_SECONDS and
     # then sleep.
     time_to_sleep
+    echo "sleeping for $PROCESS_REPORT_SLEEP_SECONDS seconds before next report processing"
     sleep "$PROCESS_REPORT_SLEEP_SECONDS"
 
     # Process reports.
